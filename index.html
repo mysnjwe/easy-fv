@@ -31,14 +31,14 @@
             --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
             --transition: all 0.2s ease;
         }
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        
+
         body {
             color: var(--text);
             background-color: var(--background);
@@ -46,14 +46,14 @@
             font-size: 0.95rem;
             font-weight: 400;
         }
-        
+
         .container {
             width: 100%;
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 2rem;
         }
-        
+
         .login-container {
             max-width: 460px;
             margin: 5rem auto;
@@ -62,7 +62,7 @@
             border-radius: var(--radius);
             box-shadow: var(--shadow-lg);
         }
-        
+
         header {
             display: flex;
             justify-content: space-between;
@@ -70,7 +70,7 @@
             padding: 1.5rem 0;
             margin-bottom: 3rem;
         }
-        
+
         .logo {
             font-weight: 600;
             font-size: 1.5rem;
@@ -79,7 +79,7 @@
             align-items: center;
             gap: 0.75rem;
         }
-        
+
         .logo-icon {
             background: linear-gradient(135deg, var(--primary) 0%, #00C6FB 100%);
             color: white;
@@ -93,12 +93,12 @@
             letter-spacing: -1px;
             box-shadow: 0 4px 10px rgba(0, 198, 251, 0.2);
         }
-        
+
         .nav {
             display: flex;
             gap: 1rem;
         }
-        
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -116,45 +116,45 @@
             transition: var(--transition);
             box-shadow: 0 4px 12px rgba(79, 172, 254, 0.2);
         }
-        
+
         .btn:hover {
             background-color: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(79, 172, 254, 0.25);
         }
-        
+
         .btn:active {
             transform: translateY(0);
         }
-        
+
         .btn-secondary {
             background-color: var(--accent);
             color: var(--text);
             box-shadow: var(--shadow-sm);
         }
-        
+
         .btn-secondary:hover {
             background-color: var(--primary-light);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.03);
         }
-        
+
         .btn-outline {
             background-color: transparent;
             color: var(--primary);
             border: 1px solid var(--border);
             box-shadow: none;
         }
-        
+
         .btn-outline:hover {
             background-color: var(--primary-light);
             border-color: var(--primary);
             box-shadow: none;
         }
-        
+
         .form-group {
             margin-bottom: 1.75rem;
         }
-        
+
         label {
             display: block;
             margin-bottom: 0.5rem;
@@ -162,7 +162,7 @@
             font-size: 0.9rem;
             color: var(--text);
         }
-        
+
         input, select, textarea {
             width: 100%;
             padding: 0.875rem 1rem;
@@ -174,33 +174,33 @@
             background-color: var(--card-bg);
             box-shadow: var(--shadow-sm);
         }
-        
+
         input::placeholder, select::placeholder, textarea::placeholder {
             color: var(--text-light);
         }
-        
+
         input:hover, select:hover, textarea:hover {
             border-color: var(--border-focus);
         }
-        
+
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.15);
         }
-        
+
         .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 1.5rem;
         }
-        
+
         @media (max-width: 768px) {
             .grid {
                 grid-template-columns: 1fr;
             }
         }
-        
+
         .card {
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -210,11 +210,11 @@
             transition: var(--transition);
             border: 1px solid var(--border);
         }
-        
+
         .card:hover {
             box-shadow: var(--shadow-lg);
         }
-        
+
         .card-title {
             font-size: 1.125rem;
             font-weight: 600;
@@ -224,41 +224,41 @@
             align-items: center;
             gap: 0.75rem;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 1rem;
             font-size: 0.9375rem;
         }
-        
+
         th, td {
             padding: 1rem;
             text-align: left;
         }
-        
+
         th {
             font-weight: 600;
             color: var(--text);
             background-color: var(--accent);
         }
-        
+
         tr {
             border-bottom: 1px solid var(--border);
         }
-        
+
         tbody tr:hover {
             background-color: var(--primary-light);
         }
-        
+
         .text-right {
             text-align: right;
         }
-        
+
         .text-center {
             text-align: center;
         }
-        
+
         .item-row {
             display: grid;
             grid-template-columns: 2fr 0.5fr 0.5fr 1fr 0.75fr 1fr 1fr;
@@ -266,11 +266,11 @@
             margin-bottom: 1rem;
             align-items: center;
         }
-        
+
         .item-row input, .item-row select {
             padding: 0.75rem;
         }
-        
+
         .invoice-preview {
             padding: 3rem;
             background: white;
@@ -280,33 +280,33 @@
             margin: 0 auto;
             border: 1px solid var(--border);
         }
-        
+
         .summary-table {
             width: auto;
             margin-left: auto;
             border-spacing: 0;
         }
-        
+
         .summary-table th, .summary-table td {
             padding: 0.75rem 1.25rem;
             border-bottom: none;
         }
-        
+
         .summary-table tr:last-child {
             border-top: 2px solid var(--border);
             font-weight: 600;
         }
-        
+
         .tab-container {
             margin-bottom: 2.5rem;
         }
-        
+
         .tabs {
             display: flex;
             border-bottom: 1px solid var(--border);
             margin-bottom: 2.5rem;
         }
-        
+
         .tab {
             padding: 1rem 1.75rem;
             cursor: pointer;
@@ -318,39 +318,39 @@
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .tab:hover {
             color: var(--text);
         }
-        
+
         .tab.active {
             border-bottom: 2px solid var(--primary);
             color: var(--primary);
         }
-        
+
         .tab-content {
             margin-top: 1.5rem;
         }
-        
+
         .tab-pane {
             display: none;
         }
-        
+
         .tab-pane.active {
             display: block;
         }
-        
+
         .mt-2 {
             margin-top: 1.5rem;
         }
-        
+
         .actions {
             display: flex;
             justify-content: flex-end;
             gap: 1rem;
             margin-top: 2rem;
         }
-        
+
         .badge {
             display: inline-flex;
             align-items: center;
@@ -359,17 +359,17 @@
             font-size: 0.75rem;
             font-weight: 500;
         }
-        
+
         .badge-success {
             background-color: var(--success-light);
             color: var(--success);
         }
-        
+
         .badge-warning {
             background-color: rgba(255, 213, 114, 0.15);
             color: var(--warning);
         }
-        
+
         .icon {
             display: inline-flex;
             align-items: center;
@@ -378,7 +378,7 @@
             height: 1.25rem;
             stroke-width: 2;
         }
-        
+
         .add-item-btn {
             display: flex;
             align-items: center;
@@ -395,12 +395,12 @@
             width: 100%;
             margin-top: 0.5rem;
         }
-        
+
         .add-item-btn:hover {
             background-color: var(--primary-light);
             border-color: var(--primary);
         }
-        
+
         .action-icon-btn {
             display: inline-flex;
             align-items: center;
@@ -414,43 +414,43 @@
             cursor: pointer;
             transition: var(--transition);
         }
-        
+
         .action-icon-btn:hover {
             background-color: var(--primary-light);
             color: var(--primary);
             transform: translateY(-2px);
         }
-        
+
         .section {
             background-color: var(--accent);
             border-radius: var(--radius);
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
-        
+
         .preview-section {
             background-color: var(--primary-light);
             border-radius: var(--radius);
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
-        
+
         .preview-box {
             background-color: white;
             border-radius: var(--radius-sm);
             padding: 1.25rem;
             box-shadow: var(--shadow-sm);
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .fadeIn {
             animation: fadeIn 0.3s ease forwards;
         }
-        
+
         @media print {
             body * {
                 visibility: hidden;
@@ -713,7 +713,6 @@
                                     </svg>
                                     Dane nabywcy
                                 </div>
-Poniżej znajduje się dalsza część kodu HTML, którą możesz dodać do poprzedniej części:
                                 <div class="form-group">
                                     <label>Nazwa firmy/osoby</label>
                                     <input type="text" id="buyer-name" placeholder="Nazwa firmy/osoby">
@@ -943,6 +942,14 @@ Poniżej znajduje się dalsza część kodu HTML, którą możesz dodać do popr
                                     </svg>
                                     Pobierz PDF
                                 </button>
+                                <button class="btn btn-secondary" id="btn-download-html">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    Pobierz HTML
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -963,6 +970,9 @@ Poniżej znajduje się dalsza część kodu HTML, którą możesz dodać do popr
             // For demo: Skip login
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'block';
+
+            // Add download HTML button
+            document.getElementById('btn-download-html').addEventListener('click', downloadHTMLFile);
         });
         
         // Tab switching logic
@@ -1162,6 +1172,95 @@ Poniżej znajduje się dalsza część kodu HTML, którą możesz dodać do popr
         function formatCurrency(value) {
             return value.toFixed(2).replace('.', ',') + ' zł';
         }
+
+        // Improved function to convert amount to words in Polish
+        function amountInWords(amount) {
+            if (amount === 0) return 'zero złotych 00/100';
+
+            const units = ['', 'jeden', 'dwa', 'trzy', 'cztery', 'pięć', 'sześć', 'siedem', 'osiem', 'dziewięć'];
+            const teens = ['dziesięć', 'jedenaście', 'dwanaście', 'trzynaście', 'czternaście', 'piętnaście', 'szesnaście', 'siedemnaście', 'osiemnaście', 'dziewiętnaście'];
+            const tens = ['', 'dziesięć', 'dwadzieścia', 'trzydzieści', 'czterdzieści', 'pięćdziesiąt', 'sześćdziesiąt', 'siedemdziesiąt', 'osiemdziesiąt', 'dziewięćdziesiąt'];
+            const hundreds = ['', 'sto', 'dwieście', 'trzysta', 'czterysta', 'pięćset', 'sześćset', 'siedemset', 'osiemset', 'dziewięćset'];
+            
+            // Function for the correct form of "złoty" based on the number
+            function zlotychForm(number) {
+                if (number === 1) return 'złoty';
+                
+                // For 2-4, except 12-14
+                if (number % 10 >= 2 && number % 10 <= 4 && (number % 100 < 10 || number % 100 > 20))
+                    return 'złote';
+                    
+                return 'złotych';
+            }
+            
+            // Convert three-digit groups to words
+            function convertThreeDigits(number) {
+                if (number === 0) return '';
+                
+                let words = '';
+                
+                // Handle hundreds
+                words += hundreds[Math.floor(number / 100)];
+                
+                // Handle tens and units
+                const remainder = number % 100;
+                if (remainder > 0) {
+                    if (words !== '') words += ' ';
+                    
+                    if (remainder < 10) {
+                        words += units[remainder];
+                    } else if (remainder < 20) {
+                        words += teens[remainder - 10];
+                    } else {
+                        words += tens[Math.floor(remainder / 10)];
+                        if (remainder % 10 > 0) {
+                            words += ' ' + units[remainder % 10];
+                        }
+                    }
+                }
+                
+                return words;
+            }
+            
+            // Process the amount
+            const wholePart = Math.floor(amount);
+            const decimalPart = Math.round((amount - wholePart) * 100);
+            
+            if (wholePart === 0) {
+                return 'zero złotych ' + decimalPart.toString().padStart(2, '0') + '/100';
+            }
+            
+            let result = '';
+            
+            // Handle thousands
+            const thousands = Math.floor(wholePart / 1000);
+            if (thousands > 0) {
+                result += convertThreeDigits(thousands);
+                
+                if (thousands === 1) {
+                    result += ' tysiąc';
+                } else if (thousands % 10 >= 2 && thousands % 10 <= 4 && (thousands % 100 < 10 || thousands % 100 > 20)) {
+                    result += ' tysiące';
+                } else {
+                    result += ' tysięcy';
+                }
+            }
+            
+            // Handle remaining part (less than 1000)
+            const remainder = wholePart % 1000;
+            if (remainder > 0) {
+                if (result !== '') result += ' ';
+                result += convertThreeDigits(remainder);
+            }
+            
+            // Add currency form
+            result += ' ' + zlotychForm(wholePart);
+            
+            // Add decimal part
+            result += ' ' + decimalPart.toString().padStart(2, '0') + '/100';
+            
+            return result;
+        }
         
         // Update invoice preview
         function updatePreview() {
@@ -1248,7 +1347,7 @@ Poniżej znajduje się dalsza część kodu HTML, którą możesz dodać do popr
                 const newRow = document.createElement('tr');
                 newRow.innerHTML = `
                     <td>${rowNumber}</td>
-<td>${name}</td>
+                    <td>${name}</td>
                     <td>${quantity}</td>
                     <td>${unit}</td>
                     <td>${formatCurrency(price)}</td>
@@ -1269,26 +1368,8 @@ Poniżej znajduje się dalsza część kodu HTML, którą możesz dodać do popr
             // Update tax rates breakdown
             updatePreviewSummary(taxRateTotals, totalNet, totalTax, totalGross);
             
-            // Amount in words
+            // Update amount in words using our improved function
             document.getElementById('preview-amount-in-words').textContent = amountInWords(totalGross);
-        }
-        
-        // Convert amount to words in Polish
-        function amountInWords(amount) {
-            if (amount === 0) return 'zero złotych 00/100';
-            
-            const units = ['', 'jeden', 'dwa', 'trzy', 'cztery', 'pięć', 'sześć', 'siedem', 'osiem', 'dziewięć'];
-            const teens = ['dziesięć', 'jedenaście', 'dwanaście', 'trzynaście', 'czternaście', 'piętnaście', 'szesnaście', 'siedemnaście', 'osiemnaście', 'dziewiętnaście'];
-            const tens = ['', 'dziesięć', 'dwadzieścia', 'trzydzieści', 'czterdzieści', 'pięćdziesiąt', 'sześćdziesiąt', 'siedemdziesiąt', 'osiemdziesiąt', 'dziewięćdziesiąt'];
-            const hundreds = ['', 'sto', 'dwieście', 'trzysta', 'czterysta', 'pięćset', 'sześćset', 'siedemset', 'osiemset', 'dziewięćset'];
-            const thousands = ['', 'tysiąc', 'tysiące', 'tysięcy'];
-            
-            // Simple implementation for demo purposes
-            const wholePart = Math.floor(amount);
-            const decimalPart = Math.round((amount - wholePart) * 100);
-            
-            // Just return a basic format for the demo
-            return wholePart.toString() + ' złotych ' + decimalPart.toString().padStart(2, '0') + '/100';
         }
         
         // Print invoice
@@ -1312,6 +1393,33 @@ Poniżej znajduje się dalsza część kodu HTML, którą możesz dodać do popr
                 pdf.save('faktura-easy-fv.pdf');
             });
         });
+        
+        // Function to download the HTML file
+        function downloadHTMLFile() {
+            // Get the current HTML content
+            const htmlContent = document.documentElement.outerHTML;
+            
+            // Create a Blob from the HTML content
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            
+            // Create a temporary URL for the Blob
+            const url = URL.createObjectURL(blob);
+            
+            // Create a temporary anchor element to trigger the download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            
+            // Trigger the download
+            document.body.appendChild(a);
+            a.click();
+            
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 0);
+        }
         
         // Navigation
         document.getElementById('btn-invoices').addEventListener('click', function() {
