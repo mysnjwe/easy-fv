@@ -261,7 +261,7 @@
 
         .item-row {
             display: grid;
-            grid-template-columns: 2fr 0.5fr 0.5fr 1fr 0.75fr 1fr 1fr;
+            grid-template-columns: 2fr 0.5fr 0.5fr 1fr 0.75fr 1fr 1fr 0.2fr;
             gap: 0.75rem;
             margin-bottom: 1rem;
             align-items: center;
@@ -421,6 +421,16 @@
             transform: translateY(-2px);
         }
 
+        .remove-item-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .remove-item-btn:hover {
+            background-color: #e66570;
+            color: white;
+        }
+
         .section {
             background-color: var(--accent);
             border-radius: var(--radius);
@@ -447,8 +457,17 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
         .fadeIn {
             animation: fadeIn 0.3s ease forwards;
+        }
+
+        .fadeOut {
+            animation: fadeOut 0.3s ease forwards;
         }
 
         @media print {
@@ -542,7 +561,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Example row -->
                             <tr>
                                 <td>FV/2025/02/001</td>
                                 <td>28.02.2025</td>
@@ -757,6 +775,7 @@
                                         <strong>VAT</strong>
                                         <strong>Netto</strong>
                                         <strong>Brutto</strong>
+                                        <span></span>
                                     </div>
                                     <div class="item-row" id="item-1" style="background-color: var(--primary-light); padding: 0.75rem; border-radius: var(--radius);">
                                         <input type="text" name="item-name" placeholder="Nazwa towaru/usługi">
@@ -777,6 +796,14 @@
                                         </select>
                                         <input type="text" name="item-net-value" readonly placeholder="0.00">
                                         <input type="text" name="item-gross-value" readonly placeholder="0.00">
+                                        <button class="action-icon-btn remove-item-btn" onclick="removeItem(this)" title="Usuń pozycję">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
                                 
@@ -795,7 +822,6 @@
                                             <th>Razem netto:</th>
                                             <td class="text-right" id="total-net">0,00 zł</td>
                                         </tr>
-                                        <!-- VAT rates will be added dynamically -->
                                         <tr>
                                             <th>Razem podatek VAT:</th>
                                             <td class="text-right" id="total-tax">0,00 zł</td>
@@ -897,7 +923,6 @@
                                                     <th>Razem netto:</th>
                                                     <td class="text-right" id="preview-total-net">0,00 zł</td>
                                                 </tr>
-                                                <!-- VAT rates will be added dynamically -->
                                                 <tr>
                                                     <th>Razem VAT:</th>
                                                     <td class="text-right" id="preview-total-tax">0,00 zł</td>
@@ -963,34 +988,23 @@
     <script>
         // Show login screen
         document.addEventListener('DOMContentLoaded', function() {
-            // Uncomment to enable login screen
-            // document.getElementById('login-screen').style.display = 'block';
-            // document.getElementById('app-screen').style.display = 'none';
-            
-            // For demo: Skip login
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'block';
 
-            // Add download HTML button
             document.getElementById('btn-download-html').addEventListener('click', downloadHTMLFile);
         });
         
         // Tab switching logic
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
-                // Remove active class from all tabs
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                // Add active class to clicked tab
                 this.classList.add('active');
                 
-                // Hide all tab panes
                 document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
-                // Show the corresponding tab pane
                 const pane = document.getElementById(this.dataset.tab);
                 pane.classList.add('active');
                 pane.classList.add('fadeIn');
                 
-                // If preview tab is clicked, update the preview
                 if (this.dataset.tab === 'invoice-preview') {
                     updatePreview();
                 }
@@ -1000,7 +1014,7 @@
         // Add new item row
         document.getElementById('add-item').addEventListener('click', function() {
             const itemsContainer = document.getElementById('invoice-items');
-            const itemCount = itemsContainer.querySelectorAll('.item-row').length - 1; // subtract header row
+            const itemCount = itemsContainer.querySelectorAll('.item-row').length - 1;
             const newItem = document.createElement('div');
             newItem.className = 'item-row';
             newItem.id = `item-${itemCount + 1}`;
@@ -1008,6 +1022,8 @@
             newItem.style.padding = '0.75rem';
             newItem.style.borderRadius = 'var(--radius)';
             newItem.style.marginBottom = '1rem';
+            newItem.style.display = 'grid';
+            newItem.style.gridTemplateColumns = '2fr 0.5fr 0.5fr 1fr 0.75fr 1fr 1fr 0.2fr';
             newItem.innerHTML = `
                 <input type="text" name="item-name" placeholder="Nazwa towaru/usługi">
                 <input type="number" name="item-quantity" min="1" step="1" value="1">
@@ -1027,41 +1043,59 @@
                 </select>
                 <input type="text" name="item-net-value" readonly placeholder="0.00">
                 <input type="text" name="item-gross-value" readonly placeholder="0.00">
+                <button class="action-icon-btn remove-item-btn" onclick="removeItem(this)" title="Usuń pozycję">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </button>
             `;
             itemsContainer.appendChild(newItem);
-            
-            // Add fade-in animation
             newItem.classList.add('fadeIn');
         });
+
+        // Remove item row
+        function removeItem(button) {
+            const row = button.closest('.item-row');
+            row.classList.add('fadeOut');
+            setTimeout(() => {
+                row.remove();
+                updateTotals();
+            }, 300);
+        }
         
         // Calculate item totals
         function calculateItemTotals(element) {
             const row = element.closest('.item-row');
-            
-            // Get values
             const quantity = parseFloat(row.querySelector('[name="item-quantity"]').value) || 0;
             const price = parseFloat(row.querySelector('[name="item-price"]').value) || 0;
             const taxRate = row.querySelector('[name="item-tax"]').value;
-            
-            // Calculate
             const netValue = quantity * price;
             let grossValue = netValue;
             
-            // Apply tax if not exempt
             if (taxRate !== 'zw') {
                 grossValue = netValue * (1 + parseFloat(taxRate) / 100);
             }
             
-            // Update the fields
             row.querySelector('[name="item-net-value"]').value = netValue.toFixed(2);
             row.querySelector('[name="item-gross-value"]').value = grossValue.toFixed(2);
             
-            // Aktualizacja bezpośrednia wartości słownie na podglądzie
             const totalGross = calculateInvoiceTotal();
             document.getElementById('preview-amount-in-words').textContent = amountInWords(totalGross);
-            
-            // Update totals
             updateTotals();
+        }
+        
+        // Calculate invoice total
+        function calculateInvoiceTotal() {
+            let totalGross = 0;
+            document.querySelectorAll('.item-row').forEach((row, index) => {
+                if (index === 0) return;
+                const grossValue = parseFloat(row.querySelector('[name="item-gross-value"]').value) || 0;
+                totalGross += grossValue;
+            });
+            return totalGross;
         }
         
         // Update invoice totals
@@ -1069,59 +1103,42 @@
             let totalNet = 0;
             let totalTax = 0;
             let totalGross = 0;
-            
-            // Tax rates totals - using an object to track which rates are used
             const taxRateTotals = {};
             
             document.querySelectorAll('.item-row').forEach((row, index) => {
-                if (index === 0) return; // Skip header row
-                
+                if (index === 0) return;
                 const netValue = parseFloat(row.querySelector('[name="item-net-value"]').value) || 0;
                 const grossValue = parseFloat(row.querySelector('[name="item-gross-value"]').value) || 0;
                 const taxRate = row.querySelector('[name="item-tax"]').value;
                 
-                // Add to totals
                 totalNet += netValue;
                 totalGross += grossValue;
-                
-                // Calculate tax amount and add to appropriate tax rate total
                 const taxAmount = grossValue - netValue;
                 totalTax += taxAmount;
                 
-                // Skip tax rate tracking for exempt items
-                if (taxRate === 'zw') return;
-                
-                // Track tax rates used
-                if (!taxRateTotals[taxRate]) {
-                    taxRateTotals[taxRate] = 0;
+                if (taxRate !== 'zw') {
+                    if (!taxRateTotals[taxRate]) {
+                        taxRateTotals[taxRate] = 0;
+                    }
+                    taxRateTotals[taxRate] += taxAmount;
                 }
-                taxRateTotals[taxRate] += taxAmount;
             });
             
-            // Update main totals
             document.getElementById('total-net').textContent = formatCurrency(totalNet);
             document.getElementById('total-tax').textContent = formatCurrency(totalTax);
             document.getElementById('total-gross').textContent = formatCurrency(totalGross);
             
-            // Dynamically update summary table with used tax rates
             const summaryTable = document.getElementById('summary-table');
-            
-            // Remove any existing tax rate rows (preserve the first and last two rows)
             const rows = summaryTable.getElementsByTagName('tr');
             const totalRows = rows.length;
             
-            // Remove existing tax rate rows (all rows between first and last two)
             if (totalRows > 3) {
-                // Remove in reverse to avoid index issues
                 for (let i = totalRows - 3; i > 0; i--) {
                     summaryTable.removeChild(rows[i]);
                 }
             }
             
-            // Get the row before which we'll add the tax rate rows
             const totalTaxRow = summaryTable.querySelector('tr:nth-last-child(2)');
-            
-            // Add rows for each used tax rate
             Object.keys(taxRateTotals).sort((a, b) => b - a).forEach(rate => {
                 if (taxRateTotals[rate] > 0) {
                     const taxRow = document.createElement('tr');
@@ -1133,15 +1150,12 @@
                 }
             });
             
-            // Also update preview table
             updatePreviewSummary(taxRateTotals, totalNet, totalTax, totalGross);
         }
         
         // Update preview summary table
         function updatePreviewSummary(taxRateTotals, totalNet, totalTax, totalGross) {
             const previewSummaryTable = document.getElementById('preview-summary-table');
-            
-            // Remove any existing tax rate rows
             const rows = previewSummaryTable.getElementsByTagName('tr');
             const totalRows = rows.length;
             
@@ -1151,10 +1165,7 @@
                 }
             }
             
-            // Get the row before which we'll add the tax rate rows
             const totalTaxRow = previewSummaryTable.querySelector('tr:nth-last-child(2)');
-            
-            // Add rows for each used tax rate
             Object.keys(taxRateTotals).sort((a, b) => b - a).forEach(rate => {
                 if (taxRateTotals[rate] > 0) {
                     const taxRow = document.createElement('tr');
@@ -1166,28 +1177,23 @@
                 }
             });
             
-            // Update main totals
             document.getElementById('preview-total-net').textContent = formatCurrency(totalNet);
             document.getElementById('preview-total-tax').textContent = formatCurrency(totalTax);
             document.getElementById('preview-total-gross').textContent = formatCurrency(totalGross);
         }
         
-        // Format currency (PLN)
+        // Format currency with space as thousand separator
         function formatCurrency(value) {
-            return value.toFixed(2).replace('.', ',') + ' zł';
+            const formatted = value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            return `${formatted} zł`;
         }
 
-        // Kompletna funkcja zamiany liczby na słowa w języku polskim
+        // Convert amount to words in Polish
         function amountInWords(amount) {
-            // Zabezpieczenie przed NaN i undefined
             if (isNaN(amount) || amount === undefined) {
                 amount = 0;
             }
-            
-            // Zaokrąglenie do 2 miejsc po przecinku
             amount = parseFloat(amount.toFixed(2));
-            
-            // Podział na złote i grosze
             const zloty = Math.floor(amount);
             const grosze = Math.round((amount - zloty) * 100);
             
@@ -1198,15 +1204,11 @@
             
             function convertLessThanThousand(number) {
                 let result = '';
-                
-                // Setki
                 const h = Math.floor(number / 100);
                 number %= 100;
                 if (h > 0) {
                     result += hundreds[h] + ' ';
                 }
-                
-                // Dziesiątki i jedności
                 if (number < 10) {
                     result += units[number];
                 } else if (number < 20) {
@@ -1219,16 +1221,13 @@
                         result += ' ' + units[u];
                     }
                 }
-                
                 return result.trim();
             }
             
-            // Konwersja złotych na słowa
             let result = '';
             if (zloty === 0) {
                 result = 'zero';
             } else {
-                // Tysiące
                 const thousands = Math.floor(zloty / 1000);
                 const remainder = zloty % 1000;
                 
@@ -1237,12 +1236,10 @@
                         result += 'jeden tysiąc';
                     } else {
                         result += convertLessThanThousand(thousands) + ' tysięcy';
-                        // Poprawka dla 2-4 tysiące (oprócz 12-14)
                         if (thousands % 10 >= 2 && thousands % 10 <= 4 && (thousands % 100 < 10 || thousands % 100 > 20)) {
                             result = result.slice(0, -8) + "tysiące";
                         }
                     }
-                    
                     if (remainder > 0) {
                         result += ' ';
                     }
@@ -1253,7 +1250,6 @@
                 }
             }
             
-            // Dodanie odpowiedniej formy słowa "złoty"
             if (zloty === 1) {
                 result += ' złoty';
             } else if (zloty % 10 >= 2 && zloty % 10 <= 4 && (zloty % 100 < 10 || zloty % 100 > 20)) {
@@ -1262,92 +1258,66 @@
                 result += ' złotych';
             }
             
-            // Dodanie groszy
             result += ' ' + grosze.toString().padStart(2, '0') + '/100';
-            
-            // Pierwsza litera wielka
             return result.charAt(0).toUpperCase() + result.slice(1);
         }
         
-
-        
         // Update invoice preview
         function updatePreview() {
-            // Basic info
             document.getElementById('preview-invoice-number').textContent = document.getElementById('invoice-number').value;
-            
-            // Format dates
             const issueDate = new Date(document.getElementById('issue-date').value);
             const deliveryDate = new Date(document.getElementById('delivery-date').value);
-            
-            const formatDate = (date) => {
-                return date.toLocaleDateString('pl-PL');
-            };
-            
+            const formatDate = (date) => date.toLocaleDateString('pl-PL');
             document.getElementById('preview-issue-date').textContent = formatDate(issueDate);
             document.getElementById('preview-delivery-date').textContent = formatDate(deliveryDate);
             
-            // Calculate due date based on payment term
             const paymentTerm = parseInt(document.getElementById('payment-term').value);
             const dueDate = new Date(issueDate);
             dueDate.setDate(dueDate.getDate() + paymentTerm);
             document.getElementById('preview-due-date').textContent = formatDate(dueDate);
             
-            // Payment method
             const paymentMethodSelect = document.getElementById('payment-method');
-            document.getElementById('preview-payment-method').textContent = 
-                paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
+            document.getElementById('preview-payment-method').textContent = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
             
-            // Seller details
             document.getElementById('preview-seller-name').textContent = document.getElementById('seller-name').value || 'Andrzej Kowalski';
             document.getElementById('preview-seller-address').textContent = document.getElementById('seller-address').value || 'ul. Przedsiębiorcza 1';
             const sellerCity = (document.getElementById('seller-postal-code').value + ' ' + document.getElementById('seller-city').value).trim() || '01-001 Warszawa';
             document.getElementById('preview-seller-city').textContent = sellerCity;
             document.getElementById('preview-seller-tax-id').textContent = document.getElementById('seller-tax-id').value || '123-456-78-90';
             
-            // Buyer details
             document.getElementById('preview-buyer-name').textContent = document.getElementById('buyer-name').value || '[Nazwa firmy/osoby]';
             document.getElementById('preview-buyer-address').textContent = document.getElementById('buyer-address').value || '[Adres]';
             const city = (document.getElementById('buyer-postal-code').value + ' ' + document.getElementById('buyer-city').value).trim() || '[Kod i miasto]';
             document.getElementById('preview-buyer-city').textContent = city;
             document.getElementById('preview-buyer-tax-id').textContent = document.getElementById('buyer-tax-id').value || '[NIP]';
             
-            // Items
             const previewItems = document.getElementById('preview-items');
             previewItems.innerHTML = '';
-            
             let rowNumber = 1;
             let totalNet = 0;
             let totalTax = 0;
             let totalGross = 0;
             const taxRateTotals = {};
             
-
-            
             document.querySelectorAll('.item-row').forEach((row, index) => {
-                if (index === 0) return; // Skip header row
-                
+                if (index === 0) return;
                 const name = row.querySelector('[name="item-name"]').value;
-                if (!name) return; // Skip empty rows
+                if (!name) return;
                 
                 const quantity = row.querySelector('[name="item-quantity"]').value;
                 const unit = row.querySelector('[name="item-unit"]').value;
                 const price = parseFloat(row.querySelector('[name="item-price"]').value) || 0;
                 const netValue = parseFloat(row.querySelector('[name="item-net-value"]').value) || 0;
-                
                 const taxRateSelect = row.querySelector('[name="item-tax"]');
                 const taxRateValue = taxRateSelect.value;
                 const taxRateText = taxRateSelect.options[taxRateSelect.selectedIndex].text;
-                
                 const grossValue = parseFloat(row.querySelector('[name="item-gross-value"]').value) || 0;
                 const taxAmount = grossValue - netValue;
                 
-                // Add to totals
                 totalNet += netValue;
                 totalGross += grossValue;
                 totalTax += taxAmount;
                 
-                // Track tax rates used
                 if (taxRateValue !== 'zw') {
                     if (!taxRateTotals[taxRateValue]) {
                         taxRateTotals[taxRateValue] = 0;
@@ -1371,18 +1341,12 @@
                 rowNumber++;
             });
             
-            // Update totals
             document.getElementById('preview-total-net').textContent = formatCurrency(totalNet);
             document.getElementById('preview-total-tax').textContent = formatCurrency(totalTax);
             document.getElementById('preview-total-gross').textContent = formatCurrency(totalGross);
             
-            // Update tax rates breakdown
             updatePreviewSummary(taxRateTotals, totalNet, totalTax, totalGross);
-            
-            // Oblicz sumę faktury bezpośrednio z pozycji faktury
             const invoiceTotal = calculateInvoiceTotal();
-            
-            // Update amount in words - bezpośrednio pobrać wartość
             document.getElementById('preview-amount-in-words').textContent = amountInWords(invoiceTotal);
         }
         
@@ -1394,7 +1358,6 @@
         // Generate PDF
         document.getElementById('btn-download-pdf').addEventListener('click', function() {
             const { jsPDF } = window.jspdf;
-            
             const element = document.getElementById('preview-container');
             html2canvas(element).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
@@ -1402,33 +1365,21 @@
                 const imgProps = pdf.getImageProperties(imgData);
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                
                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
                 pdf.save('faktura-easy-fv.pdf');
             });
         });
         
-        // Function to download the HTML file
+        // Download HTML file
         function downloadHTMLFile() {
-            // Get the current HTML content
             const htmlContent = document.documentElement.outerHTML;
-            
-            // Create a Blob from the HTML content
             const blob = new Blob([htmlContent], { type: 'text/html' });
-            
-            // Create a temporary URL for the Blob
             const url = URL.createObjectURL(blob);
-            
-            // Create a temporary anchor element to trigger the download
             const a = document.createElement('a');
             a.href = url;
             a.download = 'index.html';
-            
-            // Trigger the download
             document.body.appendChild(a);
             a.click();
-            
-            // Clean up
             setTimeout(() => {
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
@@ -1448,11 +1399,8 @@
         
         // Generate invoice button
         document.getElementById('generate-invoice').addEventListener('click', function() {
-            // Najpierw aktualizujemy podgląd
             updatePreview();
-            // Switch to preview tab
             document.querySelector('.tab[data-tab="invoice-preview"]').click();
-            // Display success message
             const successMessage = document.createElement('div');
             successMessage.style.position = 'fixed';
             successMessage.style.top = '20px';
@@ -1470,7 +1418,6 @@
             successMessage.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Faktura została wygenerowana!';
             document.body.appendChild(successMessage);
             
-            // Add animation and remove after delay
             successMessage.style.animation = 'fadeIn 0.3s ease forwards';
             setTimeout(() => {
                 successMessage.style.opacity = '0';
