@@ -1,4 +1,20 @@
-<!DOCTYPE html>
+// Bezpośrednie obliczanie sumy brutto na podstawie wartości pozycji faktury
+        function calculateInvoiceTotal() {
+            let totalGross = 0;
+            
+            // Przejdź przez wszystkie pozycje faktury (oprócz nagłówka)
+            document.querySelectorAll('.item-row').forEach((row, index) => {
+                if (index === 0) return; // Skip header row
+                
+                // Pobierz wartość brutto
+                const grossValue = parseFloat(row.querySelector('[name="item-gross-value"]').value) || 0;
+                
+                // Dodaj do sumy
+                totalGross += grossValue;
+            });
+            
+            return totalGross;
+        }<!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -1177,25 +1193,7 @@
             return value.toFixed(2).replace('.', ',') + ' zł';
         }
 
-        // Bezpośrednie obliczanie sumy brutto na podstawie wartości pozycji faktury
-        function calculateInvoiceTotal() {
-            let totalGross = 0;
-            
-            // Przejdź przez wszystkie pozycje faktury (oprócz nagłówka)
-            document.querySelectorAll('.item-row').forEach((row, index) => {
-                if (index === 0) return; // Skip header row
-                
-                // Pobierz wartość brutto
-                const grossValue = parseFloat(row.querySelector('[name="item-gross-value"]').value) || 0;
-                
-                // Dodaj do sumy
-                totalGross += grossValue;
-            });
-            
-            return totalGross;
-        }
-        
-        // Nowa, znacznie prostsza funkcja konwersji kwoty na słowa
+        // Poprawiona funkcja konwersji liczby tysięcy
         function amountInWords(amount) {
             // Zabezpieczenie przed NaN i undefined
             if (isNaN(amount) || amount === undefined) {
@@ -1209,8 +1207,69 @@
             const zloty = Math.floor(amount);
             const grosze = Math.round((amount - zloty) * 100);
             
-            // Prosta konwersja - po prostu wyświetl liczbę
-            let result = zloty.toString();
+            const units = ['', 'jeden', 'dwa', 'trzy', 'cztery', 'pięć', 'sześć', 'siedem', 'osiem', 'dziewięć'];
+            const teens = ['dziesięć', 'jedenaście', 'dwanaście', 'trzynaście', 'czternaście', 'piętnaście', 'szesnaście', 'siedemnaście', 'osiemnaście', 'dziewiętnaście'];
+            const tens = ['', 'dziesięć', 'dwadzieścia', 'trzydzieści', 'czterdzieści', 'pięćdziesiąt', 'sześćdziesiąt', 'siedemdziesiąt', 'osiemdziesiąt', 'dziewięćdziesiąt'];
+            const hundreds = ['', 'sto', 'dwieście', 'trzysta', 'czterysta', 'pięćset', 'sześćset', 'siedemset', 'osiemset', 'dziewięćset'];
+            
+            function convertLessThanThousand(number) {
+                let result = '';
+                
+                // Setki
+                const h = Math.floor(number / 100);
+                number %= 100;
+                if (h > 0) {
+                    result += hundreds[h] + ' ';
+                }
+                
+                // Dziesiątki i jedności
+                if (number < 10) {
+                    result += units[number];
+                } else if (number < 20) {
+                    result += teens[number - 10];
+                } else {
+                    const t = Math.floor(number / 10);
+                    const u = number % 10;
+                    result += tens[t];
+                    if (u > 0) {
+                        result += ' ' + units[u];
+                    }
+                }
+                
+                return result.trim();
+            }
+            
+            // Konwersja złotych na słowa
+            let result = '';
+            if (zloty === 0) {
+                result = 'zero';
+            } else {
+                // Tysiące
+                const thousands = Math.floor(zloty / 1000);
+                const remainder = zloty % 1000;
+                
+                if (thousands > 0) {
+                    if (thousands === 1) {
+                        result += 'jeden tysiąc';
+                    } else {
+                        const thousandsText = convertLessThanThousand(thousands);
+                        // Poprawka dla 2-4 tysiące (oprócz 12-14)
+                        if (thousands % 10 >= 2 && thousands % 10 <= 4 && (thousands % 100 < 10 || thousands % 100 > 20)) {
+                            result += thousandsText + ' tysiące';
+                        } else {
+                            result += thousandsText + ' tysięcy';
+                        }
+                    }
+                    
+                    if (remainder > 0) {
+                        result += ' ';
+                    }
+                }
+                
+                if (remainder > 0) {
+                    result += convertLessThanThousand(remainder);
+                }
+            }
             
             // Dodanie odpowiedniej formy słowa "złoty"
             if (zloty === 1) {
@@ -1224,7 +1283,8 @@
             // Dodanie groszy
             result += ' ' + grosze.toString().padStart(2, '0') + '/100';
             
-            return result;
+            // Pierwsza litera wielka
+            return result.charAt(0).toUpperCase() + result.slice(1);
         }
         
 
@@ -1408,8 +1468,13 @@
         document.getElementById('generate-invoice').addEventListener('click', function() {
             // Najpierw aktualizujemy podgląd
             updatePreview();
+            
             // Switch to preview tab
-            document.querySelector('.tab[data-tab="invoice-preview"]').click();
+            const previewTab = document.querySelector('.tab[data-tab="invoice-preview"]');
+            if (previewTab) {
+                previewTab.click();
+            }
+            
             // Display success message
             const successMessage = document.createElement('div');
             successMessage.style.position = 'fixed';
