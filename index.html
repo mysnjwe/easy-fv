@@ -1,4 +1,21 @@
-// Bezpośrednie obliczanie sumy brutto na podstawie wartości pozycji faktury
+.delete-item-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background-color: var(--accent);
+            color: var(--danger);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .delete-item-btn:hover {
+            background-color: #FFEBEE;
+            transform: translateY(-2px);
+        }        // Bezpośrednie obliczanie sumy brutto na podstawie wartości pozycji faktury
         function calculateInvoiceTotal() {
             let totalGross = 0;
             
@@ -277,7 +294,7 @@
 
         .item-row {
             display: grid;
-            grid-template-columns: 2fr 0.5fr 0.5fr 1fr 0.75fr 1fr 1fr;
+            grid-template-columns: 2fr 0.5fr 0.5fr 1fr 0.75fr 1fr 1fr 0.3fr;
             gap: 0.75rem;
             margin-bottom: 1rem;
             align-items: center;
@@ -773,6 +790,7 @@
                                         <strong>VAT</strong>
                                         <strong>Netto</strong>
                                         <strong>Brutto</strong>
+                                        <strong style="width: 40px;">Akcje</strong>
                                     </div>
                                     <div class="item-row" id="item-1" style="background-color: var(--primary-light); padding: 0.75rem; border-radius: var(--radius);">
                                         <input type="text" name="item-name" placeholder="Nazwa towaru/usługi">
@@ -793,6 +811,15 @@
                                         </select>
                                         <input type="text" name="item-net-value" readonly placeholder="0.00">
                                         <input type="text" name="item-gross-value" readonly placeholder="0.00">
+                                        <button type="button" class="delete-item-btn" onclick="removeInvoiceItem(this)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 6h18"></path>
+                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
                                 
@@ -1043,12 +1070,41 @@
                 </select>
                 <input type="text" name="item-net-value" readonly placeholder="0.00">
                 <input type="text" name="item-gross-value" readonly placeholder="0.00">
+                <button type="button" class="delete-item-btn" onclick="removeInvoiceItem(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </button>
             `;
             itemsContainer.appendChild(newItem);
             
             // Add fade-in animation
             newItem.classList.add('fadeIn');
+            
+            // Inicjalizacja pól
+            calculateItemTotals(newItem.querySelector('[name="item-price"]'));
         });
+        
+        // Remove invoice item
+        function removeInvoiceItem(button) {
+            const row = button.closest('.item-row');
+            
+            // Animacja przed usunięciem
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(-10px)';
+            row.style.transition = 'opacity 0.3s, transform 0.3s';
+            
+            setTimeout(() => {
+                row.remove();
+                // Aktualizacja sum
+                updateTotals();
+                updatePreview();
+            }, 300);
+        }
         
         // Calculate item totals
         function calculateItemTotals(element) {
@@ -1190,10 +1246,17 @@
         
         // Format currency (PLN)
         function formatCurrency(value) {
-            return value.toFixed(2).replace('.', ',') + ' zł';
+            // Zaokrąglenie do 2 miejsc po przecinku
+            const roundedValue = parseFloat(value.toFixed(2));
+            
+            // Formatowanie z separatorem tysięcy (spacja) i części dziesiętnej (przecinek)
+            const parts = roundedValue.toString().split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            
+            return parts.join(',') + ' zł';
         }
 
-        // Poprawiona funkcja konwersji liczby tysięcy
+        // Funkcja zamiany liczby na słowa w języku polskim (nowy format)
         function amountInWords(amount) {
             // Zabezpieczenie przed NaN i undefined
             if (isNaN(amount) || amount === undefined) {
@@ -1239,6 +1302,35 @@
                 return result.trim();
             }
             
+            // Funkcja do konwersji groszy
+            function convertGrosze(grosze) {
+                // Specjalne przypadki dla słowa "setnych"
+                if (grosze === 0) return "zero setnych";
+                if (grosze === 1) return "jedna setna";
+                
+                let groszText = '';
+                
+                if (grosze < 10) {
+                    groszText = units[grosze];
+                } else if (grosze < 20) {
+                    groszText = teens[grosze - 10];
+                } else {
+                    const t = Math.floor(grosze / 10);
+                    const u = grosze % 10;
+                    groszText = tens[t];
+                    if (u > 0) {
+                        groszText += ' ' + units[u];
+                    }
+                }
+                
+                // Końcówka "setnych" / "setne" / "setna"
+                if (grosze % 10 >= 2 && grosze % 10 <= 4 && (grosze % 100 < 10 || grosze % 100 > 20)) {
+                    return groszText + ' setne';
+                } else {
+                    return groszText + ' setnych';
+                }
+            }
+            
             // Konwersja złotych na słowa
             let result = '';
             if (zloty === 0) {
@@ -1271,20 +1363,23 @@
                 }
             }
             
-            // Dodanie odpowiedniej formy słowa "złoty"
-            if (zloty === 1) {
-                result += ' złoty';
-            } else if (zloty % 10 >= 2 && zloty % 10 <= 4 && (zloty % 100 < 10 || zloty % 100 > 20)) {
-                result += ' złote';
-            } else {
-                result += ' złotych';
+            // Dodanie groszy w nowym formacie
+            if (grosze > 0) {
+                result += ' i ' + convertGrosze(grosze);
             }
-            
-            // Dodanie groszy
-            result += ' ' + grosze.toString().padStart(2, '0') + '/100';
             
             // Pierwsza litera wielka
             return result.charAt(0).toUpperCase() + result.slice(1);
+        }
+        
+        // Formatowanie liczby dla czytelności
+        function formatNumber(value) {
+            if (isNaN(value)) return "0";
+            
+            const parts = value.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            
+            return parts.join(",");
         }
         
 
