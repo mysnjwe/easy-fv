@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easy Fv - Prosty Generator Faktur</title>
+    <title>Easy FV - Prosty i Darmowy Generator Faktur Online</title>
+    <meta name="description" content="Easy FV to prosty, darmowy program do tworzenia faktur online. Idealny dla freelancerów i małych firm. Twórz profesjonalne faktury szybko i łatwo!">
+    <meta name="keywords" content="program do faktur, Easy FV, faktury online, darmowe faktury, generator faktur, faktury dla freelancerów, narzędzie do faktur">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -486,6 +488,11 @@
                 border: none;
             }
         }
+
+        /* Dodatkowy styl dla treści SEO – ukryty dla użytkowników, widoczny dla Google */
+        .seo-content {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -495,7 +502,7 @@
             <div style="text-align: center; margin-bottom: 2.5rem;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1.25rem;">
                     <div class="logo-icon">Fv</div>
-                    <h1 style="font-size: 1.75rem; color: var(--text); font-weight: 600;">Easy Fv</h1>
+                    <h1 style="font-size: 1.75rem; color: var(--text); font-weight: 600;">Easy FV</h1>
                 </div>
                 <p style="color: var(--text-light);">Twórz faktury szybko i profesjonalnie</p>
             </div>
@@ -521,7 +528,7 @@
         <header class="container">
             <div class="logo">
                 <div class="logo-icon">Fv</div>
-                Easy Fv
+                Easy FV
             </div>
             <div class="nav">
                 <a href="#" class="btn btn-secondary" id="btn-invoices">
@@ -614,6 +621,21 @@
             <div id="new-invoice-screen">
                 <h1 style="font-size: 1.75rem; margin-bottom: 2rem; font-weight: 600;">Nowa faktura</h1>
                 
+                <!-- SEO Content (ukryte dla użytkowników, widoczne dla Google) -->
+                <div class="seo-content">
+                    <h2>O Easy FV – Darmowy Program do Faktur</h2>
+                    <p>Easy FV to nowoczesny, darmowy program online do tworzenia faktur VAT. Nasze narzędzie jest idealne dla freelancerów, małych firm i przedsiębiorców, którzy chcą szybko i profesjonalnie generować faktury. Oferujemy intuicyjny interfejs, możliwość pobierania faktur w formacie PDF i HTML, oraz responsywny design na urządzenia mobilne i desktopowe.</p>
+                    <p>Korzystaj z Easy FV, aby tworzyć faktury online bez instalacji, z funkcjami takimi jak podgląd faktury, edycja pozycji, obliczanie podatków VAT (23%, 8%, 5%, 0%, zw.) i zarządzanie danymi sprzedawcy oraz nabywcy. Nasz program wspiera różne sposoby płatności, takie jak przelew, gotówka czy karta płatnicza, oraz pozwala zapisać faktury jako szkice.</p>
+                    <h3>Dlaczego warto wybrać Easy FV?</h3>
+                    <ul>
+                        <li>100% darmowy i dostępny online</li>
+                        <li>Prosty w obsłudze dla każdego</li>
+                        <li>Bezpieczne zarządzanie danymi</li>
+                        <li>Obsługa faktur dla firm i osób prywatnych</li>
+                    </ul>
+                    <p>Sprawdź Easy FV już dziś i zacznij tworzyć profesjonalne faktury w kilka minut! Odwiedź nas na: https://mysnjwe.github.io/easy-fv/</p>
+                </div>
+
                 <div class="tab-container">
                     <div class="tabs">
                         <div class="tab active" data-tab="invoice-data">
@@ -1436,9 +1458,4 @@
                 this.parentElement.classList.add('focused');
             });
             input.addEventListener('blur', function() {
-                this.parentElement.classList.remove('focused');
-            });
-        });
-    </script>
-</body>
-</html>
+                this.parentElement.classList.remove('focused
