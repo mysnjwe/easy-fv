@@ -489,14 +489,12 @@
             }
         }
 
-        /* Dodatkowy styl dla treści SEO – ukryty dla użytkowników, widoczny dla Google */
         .seo-content {
             display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
     <div id="login-screen" style="display: none;">
         <div class="login-container">
             <div style="text-align: center; margin-bottom: 2.5rem;">
@@ -523,7 +521,6 @@
         </div>
     </div>
 
-    <!-- Main Application -->
     <div id="app-screen">
         <header class="container">
             <div class="logo">
@@ -552,7 +549,6 @@
         </header>
 
         <div class="container">
-            <!-- Invoice List Screen -->
             <div id="invoice-list-screen" style="display: none;">
                 <h1 style="font-size: 1.75rem; margin-bottom: 2rem; font-weight: 600;">Moje faktury</h1>
                 <div class="card">
@@ -617,11 +613,9 @@
                 </div>
             </div>
 
-            <!-- New Invoice Screen -->
             <div id="new-invoice-screen">
                 <h1 style="font-size: 1.75rem; margin-bottom: 2rem; font-weight: 600;">Nowa faktura</h1>
                 
-                <!-- SEO Content (ukryte dla użytkowników, widoczne dla Google) -->
                 <div class="seo-content">
                     <h2>O Easy FV – Darmowy Program do Faktur</h2>
                     <p>Easy FV to nowoczesny, darmowy program online do tworzenia faktur VAT. Nasze narzędzie jest idealne dla freelancerów, małych firm i przedsiębiorców, którzy chcą szybko i profesjonalnie generować faktury. Oferujemy intuicyjny interfejs, możliwość pobierania faktur w formacie PDF i HTML, oraz responsywny design na urządzenia mobilne i desktopowe.</p>
@@ -655,10 +649,8 @@
                     </div>
                     
                     <div class="tab-content">
-                        <!-- Invoice Data Tab -->
                         <div class="tab-pane active" id="invoice-data">
                             <div class="grid">
-                                <!-- Invoice Information -->
                                 <div class="card">
                                     <div class="card-title">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -710,7 +702,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Seller Information -->
                                 <div class="card">
                                     <div class="card-title">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -744,7 +735,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Buyer Information -->
                             <div class="card mt-2">
                                 <div class="card-title">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -777,7 +767,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Invoice Items -->
                             <div class="card mt-2">
                                 <div class="card-title">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -801,14 +790,14 @@
                                     </div>
                                     <div class="item-row" id="item-1" style="background-color: var(--primary-light); padding: 0.75rem; border-radius: var(--radius);">
                                         <input type="text" name="item-name" placeholder="Nazwa towaru/usługi">
-                                        <input type="number" name="item-quantity" min="1" step="1" value="1">
+                                        <input type="number" name="item-quantity" min="1" step="1" value="1" onchange="calculateItemTotals(this)">
                                         <select name="item-unit">
                                             <option value="szt.">szt.</option>
                                             <option value="godz.">godz.</option>
                                             <option value="usł.">usł.</option>
                                             <option value="kg">kg</option>
                                         </select>
-                                        <input type="number" name="item-price" min="0" step="0.01" placeholder="0.00" onchange="calculateItemTotals(this)">
+                                        <input type="number" name="item-price" min="0" step="0.01" placeholder="0.00" onchange="calculateItemTotals(this)" oninput="calculateItemTotals(this)">
                                         <select name="item-tax" onchange="calculateItemTotals(this)">
                                             <option value="23">23%</option>
                                             <option value="8">8%</option>
@@ -871,12 +860,11 @@
                                         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                                         <rect x="6" y="14" width="12" height="8"></rect>
                                     </svg>
-                                    Generuj fakturę
+                                    Drukuj fakturę
                                 </button>
                             </div>
                         </div>
                         
-                        <!-- Invoice Preview Tab -->
                         <div class="tab-pane" id="invoice-preview">
                             <div class="invoice-preview" id="preview-container">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
@@ -928,7 +916,6 @@
                                             </tr>
                                         </thead>
                                         <tbody id="preview-items">
-                                            <!-- Items will be added here dynamically -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -1008,15 +995,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-        // Show login screen
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'block';
 
             document.getElementById('btn-download-html').addEventListener('click', downloadHTMLFile);
+            
+            const firstItemInputs = document.querySelectorAll('#item-1 input, #item-1 select');
+            firstItemInputs.forEach(input => {
+                if (input.name === 'item-quantity' || input.name === 'item-price') {
+                    input.addEventListener('input', function() {
+                        calculateItemTotals(this);
+                    });
+                } else if (input.name === 'item-tax') {
+                    input.addEventListener('change', function() {
+                        calculateItemTotals(this);
+                    });
+                }
+            });
         });
         
-        // Tab switching logic
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1033,7 +1031,6 @@
             });
         });
         
-        // Add new item row
         document.getElementById('add-item').addEventListener('click', function() {
             const itemsContainer = document.getElementById('invoice-items');
             const itemCount = itemsContainer.querySelectorAll('.item-row').length - 1;
@@ -1048,14 +1045,14 @@
             newItem.style.gridTemplateColumns = '2fr 0.5fr 0.5fr 1fr 0.75fr 1fr 1fr 0.2fr';
             newItem.innerHTML = `
                 <input type="text" name="item-name" placeholder="Nazwa towaru/usługi">
-                <input type="number" name="item-quantity" min="1" step="1" value="1">
+                <input type="number" name="item-quantity" min="1" step="1" value="1" onchange="calculateItemTotals(this)" oninput="calculateItemTotals(this)">
                 <select name="item-unit">
                     <option value="szt.">szt.</option>
                     <option value="godz.">godz.</option>
                     <option value="usł.">usł.</option>
                     <option value="kg">kg</option>
                 </select>
-                <input type="number" name="item-price" min="0" step="0.01" placeholder="0.00" onchange="calculateItemTotals(this)">
+                <input type="number" name="item-price" min="0" step="0.01" placeholder="0.00" onchange="calculateItemTotals(this)" oninput="calculateItemTotals(this)">
                 <select name="item-tax" onchange="calculateItemTotals(this)">
                     <option value="23">23%</option>
                     <option value="8">8%</option>
@@ -1076,9 +1073,17 @@
             `;
             itemsContainer.appendChild(newItem);
             newItem.classList.add('fadeIn');
+            
+            const inputs = newItem.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                if (input.name === 'item-quantity' || input.name === 'item-price') {
+                    input.addEventListener('input', function() {
+                        calculateItemTotals(this);
+                    });
+                }
+            });
         });
 
-        // Remove item row
         function removeItem(button) {
             const row = button.closest('.item-row');
             row.classList.add('fadeOut');
@@ -1088,7 +1093,6 @@
             }, 300);
         }
         
-        // Calculate item totals
         function calculateItemTotals(element) {
             const row = element.closest('.item-row');
             const quantity = parseFloat(row.querySelector('[name="item-quantity"]').value) || 0;
@@ -1104,12 +1108,9 @@
             row.querySelector('[name="item-net-value"]').value = netValue.toFixed(2);
             row.querySelector('[name="item-gross-value"]').value = grossValue.toFixed(2);
             
-            const totalGross = calculateInvoiceTotal();
-            document.getElementById('preview-amount-in-words').textContent = amountInWords(totalGross);
             updateTotals();
         }
         
-        // Calculate invoice total
         function calculateInvoiceTotal() {
             let totalGross = 0;
             document.querySelectorAll('.item-row').forEach((row, index) => {
@@ -1120,7 +1121,6 @@
             return totalGross;
         }
         
-        // Update invoice totals
         function updateTotals() {
             let totalNet = 0;
             let totalTax = 0;
@@ -1155,12 +1155,12 @@
             const totalRows = rows.length;
             
             if (totalRows > 3) {
-                for (let i = totalRows - 3; i > 0; i--) {
-                    summaryTable.removeChild(rows[i]);
+                for (let i = totalRows - 4; i >= 0; i--) {
+                    summaryTable.removeChild(rows[i + 1]);
                 }
             }
             
-            const totalTaxRow = summaryTable.querySelector('tr:nth-last-child(2)');
+            const totalTaxRow = summaryTable.querySelector('tr:nth-child(2)');
             Object.keys(taxRateTotals).sort((a, b) => b - a).forEach(rate => {
                 if (taxRateTotals[rate] > 0) {
                     const taxRow = document.createElement('tr');
@@ -1172,22 +1172,21 @@
                 }
             });
             
-            updatePreviewSummary(taxRateTotals, totalNet, totalTax, totalGross);
+            document.getElementById('preview-amount-in-words').textContent = amountInWords(totalGross);
         }
         
-        // Update preview summary table
         function updatePreviewSummary(taxRateTotals, totalNet, totalTax, totalGross) {
             const previewSummaryTable = document.getElementById('preview-summary-table');
             const rows = previewSummaryTable.getElementsByTagName('tr');
             const totalRows = rows.length;
             
             if (totalRows > 3) {
-                for (let i = totalRows - 3; i > 0; i--) {
-                    previewSummaryTable.removeChild(rows[i]);
+                for (let i = totalRows - 4; i >= 0; i--) {
+                    previewSummaryTable.removeChild(rows[i + 1]);
                 }
             }
             
-            const totalTaxRow = previewSummaryTable.querySelector('tr:nth-last-child(2)');
+            const totalTaxRow = previewSummaryTable.querySelector('tr:nth-child(2)');
             Object.keys(taxRateTotals).sort((a, b) => b - a).forEach(rate => {
                 if (taxRateTotals[rate] > 0) {
                     const taxRow = document.createElement('tr');
@@ -1204,13 +1203,11 @@
             document.getElementById('preview-total-gross').textContent = formatCurrency(totalGross);
         }
         
-        // Format currency with space as thousand separator
         function formatCurrency(value) {
             const formatted = value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             return `${formatted} zł`;
         }
 
-        // Convert amount to words in Polish
         function amountInWords(amount) {
             if (isNaN(amount) || amount === undefined) {
                 amount = 0;
@@ -1284,12 +1281,13 @@
             return result.charAt(0).toUpperCase() + result.slice(1);
         }
         
-        // Update invoice preview
         function updatePreview() {
             document.getElementById('preview-invoice-number').textContent = document.getElementById('invoice-number').value;
             const issueDate = new Date(document.getElementById('issue-date').value);
             const deliveryDate = new Date(document.getElementById('delivery-date').value);
-            const formatDate = (date) => date.toLocaleDateString('pl-PL');
+            const formatDate = (date) => {
+                return date.toLocaleDateString('pl-PL', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.');
+            };
             document.getElementById('preview-issue-date').textContent = formatDate(issueDate);
             document.getElementById('preview-delivery-date').textContent = formatDate(deliveryDate);
             
@@ -1299,7 +1297,8 @@
             document.getElementById('preview-due-date').textContent = formatDate(dueDate);
             
             const paymentMethodSelect = document.getElementById('payment-method');
-            document.getElementById('preview-payment-method').textContent = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
+            const paymentMethodText = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
+            document.getElementById('preview-payment-method').textContent = paymentMethodText;
             
             document.getElementById('preview-seller-name').textContent = document.getElementById('seller-name').value || 'Andrzej Kowalski';
             document.getElementById('preview-seller-address').textContent = document.getElementById('seller-address').value || 'ul. Przedsiębiorcza 1';
@@ -1309,8 +1308,8 @@
             
             document.getElementById('preview-buyer-name').textContent = document.getElementById('buyer-name').value || '[Nazwa firmy/osoby]';
             document.getElementById('preview-buyer-address').textContent = document.getElementById('buyer-address').value || '[Adres]';
-            const city = (document.getElementById('buyer-postal-code').value + ' ' + document.getElementById('buyer-city').value).trim() || '[Kod i miasto]';
-            document.getElementById('preview-buyer-city').textContent = city;
+            const buyerCity = (document.getElementById('buyer-postal-code').value + ' ' + document.getElementById('buyer-city').value).trim() || '[Kod i miasto]';
+            document.getElementById('preview-buyer-city').textContent = buyerCity;
             document.getElementById('preview-buyer-tax-id').textContent = document.getElementById('buyer-tax-id').value || '[NIP]';
             
             const previewItems = document.getElementById('preview-items');
@@ -1366,40 +1365,35 @@
             document.getElementById('preview-total-net').textContent = formatCurrency(totalNet);
             document.getElementById('preview-total-tax').textContent = formatCurrency(totalTax);
             document.getElementById('preview-total-gross').textContent = formatCurrency(totalGross);
+            document.getElementById('preview-amount-in-words').textContent = amountInWords(totalGross);
             
             updatePreviewSummary(taxRateTotals, totalNet, totalTax, totalGross);
-            const invoiceTotal = calculateInvoiceTotal();
-            document.getElementById('preview-amount-in-words').textContent = amountInWords(invoiceTotal);
         }
         
-        // Print invoice
         document.getElementById('btn-print').addEventListener('click', function() {
             window.print();
         });
         
-        // Generate PDF
         document.getElementById('btn-download-pdf').addEventListener('click', function() {
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('preview-container');
             html2canvas(element).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgProps = pdf.getImageProperties(imgData);
                 const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
                 pdf.save('faktura-easy-fv.pdf');
             });
         });
         
-        // Download HTML file
         function downloadHTMLFile() {
             const htmlContent = document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'index.html';
+            a.download = 'faktura-easy-fv.html';
             document.body.appendChild(a);
             a.click();
             setTimeout(() => {
@@ -1408,7 +1402,6 @@
             }, 0);
         }
         
-        // Navigation
         document.getElementById('btn-invoices').addEventListener('click', function() {
             document.getElementById('invoice-list-screen').style.display = 'block';
             document.getElementById('new-invoice-screen').style.display = 'none';
@@ -1419,43 +1412,10 @@
             document.getElementById('new-invoice-screen').style.display = 'block';
         });
         
-        // Generate invoice button
         document.getElementById('generate-invoice').addEventListener('click', function() {
             updatePreview();
-            document.querySelector('.tab[data-tab="invoice-preview"]').click();
-            const successMessage = document.createElement('div');
-            successMessage.style.position = 'fixed';
-            successMessage.style.top = '20px';
-            successMessage.style.left = '50%';
-            successMessage.style.transform = 'translateX(-50%)';
-            successMessage.style.padding = '12px 24px';
-            successMessage.style.background = 'var(--success)';
-            successMessage.style.color = 'white';
-            successMessage.style.borderRadius = 'var(--radius)';
-            successMessage.style.boxShadow = 'var(--shadow)';
-            successMessage.style.zIndex = '1000';
-            successMessage.style.display = 'flex';
-            successMessage.style.alignItems = 'center';
-            successMessage.style.gap = '8px';
-            successMessage.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Faktura została wygenerowana!';
-            document.body.appendChild(successMessage);
-            
-            successMessage.style.animation = 'fadeIn 0.3s ease forwards';
-            setTimeout(() => {
-                successMessage.style.opacity = '0';
-                successMessage.style.transform = 'translateX(-50%) translateY(-10px)';
-                successMessage.style.transition = 'opacity 0.5s, transform 0.5s';
-                setTimeout(() => {
-                    document.body.removeChild(successMessage);
-                }, 500);
-            }, 3000);
+            window.print();
         });
-        
-        // Add focus animation to inputs
-        const inputs = document.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement.classList.add('focused');
-            });
-            input.addEventListener('blur', function() {
-                this.parentElement.classList.remove('focused
+    </script>
+</body>
+</html>
