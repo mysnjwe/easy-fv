@@ -1058,6 +1058,9 @@
             
             // Update totals
             updateTotals();
+            
+            // Również aktualizuj podgląd po zmianie wartości
+            updatePreview();
         }
         
         // Update invoice totals
@@ -1173,94 +1176,49 @@
             return value.toFixed(2).replace('.', ',') + ' zł';
         }
 
-        // Improved function to convert amount to words in Polish
+        // Całkowicie nowa, uproszczona funkcja zamiany kwoty na słowa
         function amountInWords(amount) {
-            if (amount === 0) return 'zero złotych 00/100';
-
-            const units = ['', 'jeden', 'dwa', 'trzy', 'cztery', 'pięć', 'sześć', 'siedem', 'osiem', 'dziewięć'];
-            const teens = ['dziesięć', 'jedenaście', 'dwanaście', 'trzynaście', 'czternaście', 'piętnaście', 'szesnaście', 'siedemnaście', 'osiemnaście', 'dziewiętnaście'];
-            const tens = ['', 'dziesięć', 'dwadzieścia', 'trzydzieści', 'czterdzieści', 'pięćdziesiąt', 'sześćdziesiąt', 'siedemdziesiąt', 'osiemdziesiąt', 'dziewięćdziesiąt'];
-            const hundreds = ['', 'sto', 'dwieście', 'trzysta', 'czterysta', 'pięćset', 'sześćset', 'siedemset', 'osiemset', 'dziewięćset'];
-            
-            // Function for the correct form of "złoty" based on the number
-            function zlotychForm(number) {
-                if (number === 1) return 'złoty';
-                
-                // For 2-4, except 12-14
-                if (number % 10 >= 2 && number % 10 <= 4 && (number % 100 < 10 || number % 100 > 20))
-                    return 'złote';
-                    
-                return 'złotych';
+            // Zabezpieczenie przed NaN i undefined
+            if (isNaN(amount) || amount === undefined) {
+                amount = 0;
             }
             
-            // Convert three-digit groups to words
-            function convertThreeDigits(number) {
-                if (number === 0) return '';
-                
-                let words = '';
-                
-                // Handle hundreds
-                words += hundreds[Math.floor(number / 100)];
-                
-                // Handle tens and units
-                const remainder = number % 100;
-                if (remainder > 0) {
-                    if (words !== '') words += ' ';
-                    
-                    if (remainder < 10) {
-                        words += units[remainder];
-                    } else if (remainder < 20) {
-                        words += teens[remainder - 10];
-                    } else {
-                        words += tens[Math.floor(remainder / 10)];
-                        if (remainder % 10 > 0) {
-                            words += ' ' + units[remainder % 10];
-                        }
-                    }
-                }
-                
-                return words;
-            }
+            // Zaokrąglenie do 2 miejsc po przecinku
+            amount = parseFloat(amount.toFixed(2));
             
-            // Process the amount
-            const wholePart = Math.floor(amount);
-            const decimalPart = Math.round((amount - wholePart) * 100);
+            // Podział na złote i grosze
+            const zloty = Math.floor(amount);
+            const grosze = Math.round((amount - zloty) * 100);
             
-            if (wholePart === 0) {
-                return 'zero złotych ' + decimalPart.toString().padStart(2, '0') + '/100';
-            }
-            
+            // Słowna reprezentacja liczby
             let result = '';
             
-            // Handle thousands
-            const thousands = Math.floor(wholePart / 1000);
-            if (thousands > 0) {
-                result += convertThreeDigits(thousands);
-                
-                if (thousands === 1) {
-                    result += ' tysiąc';
-                } else if (thousands % 10 >= 2 && thousands % 10 <= 4 && (thousands % 100 < 10 || thousands % 100 > 20)) {
-                    result += ' tysiące';
-                } else {
-                    result += ' tysięcy';
-                }
+            // Konwersja liczby złotych na słowa
+            if (zloty === 0) {
+                result = 'zero';
+            } else if (zloty === 1) {
+                result = 'jeden';
+            } else {
+                // Dla uproszczenia używamy po prostu liczby
+                result = zloty.toString();
             }
             
-            // Handle remaining part (less than 1000)
-            const remainder = wholePart % 1000;
-            if (remainder > 0) {
-                if (result !== '') result += ' ';
-                result += convertThreeDigits(remainder);
+            // Dodanie odpowiedniej formy słowa "złoty"
+            if (zloty === 1) {
+                result += ' złoty';
+            } else if (zloty % 10 >= 2 && zloty % 10 <= 4 && (zloty % 100 < 10 || zloty % 100 > 20)) {
+                result += ' złote';
+            } else {
+                result += ' złotych';
             }
             
-            // Add currency form
-            result += ' ' + zlotychForm(wholePart);
-            
-            // Add decimal part
-            result += ' ' + decimalPart.toString().padStart(2, '0') + '/100';
+            // Dodanie groszy
+            result += ' ' + grosze.toString().padStart(2, '0') + '/100';
             
             return result;
         }
+        
+
         
         // Update invoice preview
         function updatePreview() {
@@ -1312,6 +1270,8 @@
             let totalTax = 0;
             let totalGross = 0;
             const taxRateTotals = {};
+            
+
             
             document.querySelectorAll('.item-row').forEach((row, index) => {
                 if (index === 0) return; // Skip header row
@@ -1369,7 +1329,8 @@
             updatePreviewSummary(taxRateTotals, totalNet, totalTax, totalGross);
             
             // Update amount in words using our improved function
-            document.getElementById('preview-amount-in-words').textContent = amountInWords(totalGross);
+            // Przekazujemy wartość totalGross bezpośrednio do funkcji amountInWords
+            document.getElementById('preview-amount-in-words').textContent = amountInWords(parseFloat(totalGross));
         }
         
         // Print invoice
@@ -1434,6 +1395,8 @@
         
         // Generate invoice button
         document.getElementById('generate-invoice').addEventListener('click', function() {
+            // Najpierw aktualizujemy podgląd
+            updatePreview();
             // Switch to preview tab
             document.querySelector('.tab[data-tab="invoice-preview"]').click();
             // Display success message
