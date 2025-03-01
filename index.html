@@ -631,7 +631,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Numer faktury</label>
-                                        <input type="text" id="invoice-number" value="FV/2025/02/002" readonly>
+                                        <input type="text" id="invoice-number" value="FV/2025/02/002">
                                     </div>
                                     <div class="grid">
                                         <div class="form-group">
@@ -1056,11 +1056,12 @@
             row.querySelector('[name="item-net-value"]').value = netValue.toFixed(2);
             row.querySelector('[name="item-gross-value"]').value = grossValue.toFixed(2);
             
+            // Aktualizacja bezpośrednia wartości słownie na podglądzie
+            const totalGross = calculateInvoiceTotal();
+            document.getElementById('preview-amount-in-words').textContent = amountInWords(totalGross);
+            
             // Update totals
             updateTotals();
-            
-            // Również aktualizuj podgląd po zmianie wartości
-            updatePreview();
         }
         
         // Update invoice totals
@@ -1176,7 +1177,25 @@
             return value.toFixed(2).replace('.', ',') + ' zł';
         }
 
-        // Całkowicie nowa, uproszczona funkcja zamiany kwoty na słowa
+        // Bezpośrednie obliczanie sumy brutto na podstawie wartości pozycji faktury
+        function calculateInvoiceTotal() {
+            let totalGross = 0;
+            
+            // Przejdź przez wszystkie pozycje faktury (oprócz nagłówka)
+            document.querySelectorAll('.item-row').forEach((row, index) => {
+                if (index === 0) return; // Skip header row
+                
+                // Pobierz wartość brutto
+                const grossValue = parseFloat(row.querySelector('[name="item-gross-value"]').value) || 0;
+                
+                // Dodaj do sumy
+                totalGross += grossValue;
+            });
+            
+            return totalGross;
+        }
+        
+        // Nowa, znacznie prostsza funkcja konwersji kwoty na słowa
         function amountInWords(amount) {
             // Zabezpieczenie przed NaN i undefined
             if (isNaN(amount) || amount === undefined) {
@@ -1190,18 +1209,8 @@
             const zloty = Math.floor(amount);
             const grosze = Math.round((amount - zloty) * 100);
             
-            // Słowna reprezentacja liczby
-            let result = '';
-            
-            // Konwersja liczby złotych na słowa
-            if (zloty === 0) {
-                result = 'zero';
-            } else if (zloty === 1) {
-                result = 'jeden';
-            } else {
-                // Dla uproszczenia używamy po prostu liczby
-                result = zloty.toString();
-            }
+            // Prosta konwersja - po prostu wyświetl liczbę
+            let result = zloty.toString();
             
             // Dodanie odpowiedniej formy słowa "złoty"
             if (zloty === 1) {
@@ -1328,9 +1337,11 @@
             // Update tax rates breakdown
             updatePreviewSummary(taxRateTotals, totalNet, totalTax, totalGross);
             
-            // Update amount in words using our improved function
-            // Przekazujemy wartość totalGross bezpośrednio do funkcji amountInWords
-            document.getElementById('preview-amount-in-words').textContent = amountInWords(parseFloat(totalGross));
+            // Oblicz sumę faktury bezpośrednio z pozycji faktury
+            const invoiceTotal = calculateInvoiceTotal();
+            
+            // Update amount in words - bezpośrednio pobrać wartość
+            document.getElementById('preview-amount-in-words').textContent = amountInWords(invoiceTotal);
         }
         
         // Print invoice
