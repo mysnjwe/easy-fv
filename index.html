@@ -8,7 +8,7 @@
     <meta name="keywords" content="program do faktur, Easy FV, faktury online, darmowe faktury, generator faktur, faktury dla freelancerów, narzędzie do faktur">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #4FACFE;
@@ -38,7 +38,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
 
         body {
@@ -790,14 +790,14 @@
                                     </div>
                                     <div class="item-row" id="item-1" style="background-color: var(--primary-light); padding: 0.75rem; border-radius: var(--radius);">
                                         <input type="text" name="item-name" placeholder="Nazwa towaru/usługi">
-                                        <input type="number" name="item-quantity" min="1" step="1" value="1" onchange="calculateItemTotals(this)">
+                                        <input type="number" name="item-quantity" min="1" step="1" value="1" onchange="calculateItemTotals(this)" oninput="calculateItemTotals(this)">
                                         <select name="item-unit">
                                             <option value="szt.">szt.</option>
                                             <option value="godz.">godz.</option>
                                             <option value="usł.">usł.</option>
                                             <option value="kg">kg</option>
                                         </select>
-                                        <input type="number" name="item-price" min="0" step="0.01" placeholder="0.00" onchange="calculateItemTotals(this)" oninput="calculateItemTotals(this)">
+                                        <input type="text" name="item-price" placeholder="0,00" onchange="calculateItemTotals(this)" oninput="calculateItemTotals(this)">
                                         <select name="item-tax" onchange="calculateItemTotals(this)">
                                             <option value="23">23%</option>
                                             <option value="8">8%</option>
@@ -805,8 +805,8 @@
                                             <option value="0">0%</option>
                                             <option value="zw">zw.</option>
                                         </select>
-                                        <input type="text" name="item-net-value" readonly placeholder="0.00">
-                                        <input type="text" name="item-gross-value" readonly placeholder="0.00">
+                                        <input type="text" name="item-net-value" readonly placeholder="0,00">
+                                        <input type="text" name="item-gross-value" readonly placeholder="0,00">
                                         <button class="action-icon-btn remove-item-btn" onclick="removeItem(this)" title="Usuń pozycję">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <polyline points="3 6 5 6 21 6"></polyline>
@@ -853,14 +853,6 @@
                                         <polyline points="7 3 7 8 15 8"></polyline>
                                     </svg>
                                     Zapisz jako szkic
-                                </button>
-                                <button class="btn" id="generate-invoice">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                                        <rect x="6" y="14" width="12" height="8"></rect>
-                                    </svg>
-                                    Drukuj fakturę
                                 </button>
                             </div>
                         </div>
@@ -999,7 +991,10 @@
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'block';
 
+            // Przypisujemy handlery do przycisków
             document.getElementById('btn-download-html').addEventListener('click', downloadHTMLFile);
+            document.getElementById('btn-download-pdf').addEventListener('click', downloadPDFFile);
+            document.getElementById('btn-print').addEventListener('click', printInvoice);
             
             const firstItemInputs = document.querySelectorAll('#item-1 input, #item-1 select');
             firstItemInputs.forEach(input => {
@@ -1013,7 +1008,40 @@
                     });
                 }
             });
+
+            // Setup price formatting for all price inputs
+            setupPriceFormatting();
         });
+        
+        function setupPriceFormatting() {
+            document.querySelectorAll('.item-row').forEach(row => {
+                if (!row.querySelector('strong')) { // Skip header row
+                    const priceInput = row.querySelector('[name="item-price"]');
+                    
+                    priceInput.addEventListener('focus', function() {
+                        // Convert from formatted to raw on focus
+                        const value = parseFloat(this.value.replace(/\s/g, '').replace(',', '.')) || 0;
+                        this.value = value.toFixed(2).replace('.', ',');
+                    });
+
+                    priceInput.addEventListener('blur', function() {
+                        // Format with separators on blur
+                        const value = parseFloat(this.value.replace(/\s/g, '').replace(',', '.')) || 0;
+                        this.value = formatCurrencyInput(value);
+                    });
+
+                    // Format initial value
+                    if (priceInput.value) {
+                        const value = parseFloat(priceInput.value.replace(/\s/g, '').replace(',', '.')) || 0;
+                        priceInput.value = formatCurrencyInput(value);
+                    }
+                }
+            });
+        }
+
+        function formatCurrencyInput(value) {
+            return value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        }
         
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
@@ -1052,7 +1080,7 @@
                     <option value="usł.">usł.</option>
                     <option value="kg">kg</option>
                 </select>
-                <input type="number" name="item-price" min="0" step="0.01" placeholder="0.00" onchange="calculateItemTotals(this)" oninput="calculateItemTotals(this)">
+                <input type="text" name="item-price" placeholder="0,00" onchange="calculateItemTotals(this)" oninput="calculateItemTotals(this)">
                 <select name="item-tax" onchange="calculateItemTotals(this)">
                     <option value="23">23%</option>
                     <option value="8">8%</option>
@@ -1060,8 +1088,8 @@
                     <option value="0">0%</option>
                     <option value="zw">zw.</option>
                 </select>
-                <input type="text" name="item-net-value" readonly placeholder="0.00">
-                <input type="text" name="item-gross-value" readonly placeholder="0.00">
+                <input type="text" name="item-net-value" readonly placeholder="0,00">
+                <input type="text" name="item-gross-value" readonly placeholder="0,00">
                 <button class="action-icon-btn remove-item-btn" onclick="removeItem(this)" title="Usuń pozycję">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="3 6 5 6 21 6"></polyline>
@@ -1073,6 +1101,9 @@
             `;
             itemsContainer.appendChild(newItem);
             newItem.classList.add('fadeIn');
+            
+            // Setup price formatting for the new row
+            setupPriceFormatting();
             
             const inputs = newItem.querySelectorAll('input, select');
             inputs.forEach(input => {
@@ -1096,7 +1127,9 @@
         function calculateItemTotals(element) {
             const row = element.closest('.item-row');
             const quantity = parseFloat(row.querySelector('[name="item-quantity"]').value) || 0;
-            const price = parseFloat(row.querySelector('[name="item-price"]').value) || 0;
+            const priceInput = row.querySelector('[name="item-price"]');
+            const priceValue = priceInput.value.replace(/\s/g, '').replace(',', '.'); // Remove spaces and convert comma to dot
+            const price = parseFloat(priceValue) || 0;
             const taxRate = row.querySelector('[name="item-tax"]').value;
             const netValue = quantity * price;
             let grossValue = netValue;
@@ -1105,8 +1138,9 @@
                 grossValue = netValue * (1 + parseFloat(taxRate) / 100);
             }
             
-            row.querySelector('[name="item-net-value"]').value = netValue.toFixed(2);
-            row.querySelector('[name="item-gross-value"]').value = grossValue.toFixed(2);
+            // Format with separators for display
+            row.querySelector('[name="item-net-value"]').value = formatCurrencyInput(netValue);
+            row.querySelector('[name="item-gross-value"]').value = formatCurrencyInput(grossValue);
             
             updateTotals();
         }
@@ -1115,7 +1149,8 @@
             let totalGross = 0;
             document.querySelectorAll('.item-row').forEach((row, index) => {
                 if (index === 0) return;
-                const grossValue = parseFloat(row.querySelector('[name="item-gross-value"]').value) || 0;
+                const grossValueText = row.querySelector('[name="item-gross-value"]').value;
+                const grossValue = parseFloat(grossValueText.replace(/\s/g, '').replace(',', '.')) || 0;
                 totalGross += grossValue;
             });
             return totalGross;
@@ -1129,8 +1164,10 @@
             
             document.querySelectorAll('.item-row').forEach((row, index) => {
                 if (index === 0) return;
-                const netValue = parseFloat(row.querySelector('[name="item-net-value"]').value) || 0;
-                const grossValue = parseFloat(row.querySelector('[name="item-gross-value"]').value) || 0;
+                const netValueText = row.querySelector('[name="item-net-value"]').value;
+                const grossValueText = row.querySelector('[name="item-gross-value"]').value;
+                const netValue = parseFloat(netValueText.replace(/\s/g, '').replace(',', '.')) || 0;
+                const grossValue = parseFloat(grossValueText.replace(/\s/g, '').replace(',', '.')) || 0;
                 const taxRate = row.querySelector('[name="item-tax"]').value;
                 
                 totalNet += netValue;
@@ -1150,54 +1187,88 @@
             document.getElementById('total-tax').textContent = formatCurrency(totalTax);
             document.getElementById('total-gross').textContent = formatCurrency(totalGross);
             
+            // Przebudujemy całą tabelę podsumowania
             const summaryTable = document.getElementById('summary-table');
-            const rows = summaryTable.getElementsByTagName('tr');
-            const totalRows = rows.length;
             
-            if (totalRows > 3) {
-                for (let i = totalRows - 4; i >= 0; i--) {
-                    summaryTable.removeChild(rows[i + 1]);
-                }
+            // Usuwamy wszystkie wiersze poza ostatnim (razem brutto)
+            while (summaryTable.rows.length > 1) {
+                summaryTable.deleteRow(0);
             }
             
-            const totalTaxRow = summaryTable.querySelector('tr:nth-child(2)');
+            // Dodajemy wiersz z sumą podatku
+            const taxRow = summaryTable.insertRow(0);
+            taxRow.innerHTML = `
+                <th>Razem podatek VAT:</th>
+                <td class="text-right" id="total-tax">${formatCurrency(totalTax)}</td>
+            `;
+            
+            // Dodajemy wiersze ze szczegółami podatku
             Object.keys(taxRateTotals).sort((a, b) => b - a).forEach(rate => {
                 if (taxRateTotals[rate] > 0) {
-                    const taxRow = document.createElement('tr');
-                    taxRow.innerHTML = `
+                    const detailRow = summaryTable.insertRow(0);
+                    detailRow.innerHTML = `
                         <th>Podatek VAT (${rate}%):</th>
                         <td class="text-right">${formatCurrency(taxRateTotals[rate])}</td>
                     `;
-                    summaryTable.insertBefore(taxRow, totalTaxRow);
                 }
             });
+            
+            // Dodajemy wiersz z sumą netto na samą górę
+            const netRow = summaryTable.insertRow(0);
+            netRow.innerHTML = `
+                <th>Razem netto:</th>
+                <td class="text-right" id="total-net">${formatCurrency(totalNet)}</td>
+            `;
+            
+            // Stylizujemy ostatni wiersz (razem brutto)
+            const lastRow = summaryTable.rows[summaryTable.rows.length - 1];
+            lastRow.querySelector('th').style.fontSize = '1.1rem';
+            lastRow.querySelector('th').style.paddingTop = '1rem';
+            lastRow.querySelector('td').style.fontSize = '1.1rem';
+            lastRow.querySelector('td').style.fontWeight = '600';
+            lastRow.querySelector('td').style.paddingTop = '1rem';
             
             document.getElementById('preview-amount-in-words').textContent = amountInWords(totalGross);
         }
         
         function updatePreviewSummary(taxRateTotals, totalNet, totalTax, totalGross) {
             const previewSummaryTable = document.getElementById('preview-summary-table');
-            const rows = previewSummaryTable.getElementsByTagName('tr');
-            const totalRows = rows.length;
             
-            if (totalRows > 3) {
-                for (let i = totalRows - 4; i >= 0; i--) {
-                    previewSummaryTable.removeChild(rows[i + 1]);
-                }
+            // Przebudowujemy całą tabelę podsumowania w podglądzie
+            while (previewSummaryTable.rows.length > 1) {
+                previewSummaryTable.deleteRow(0);
             }
             
-            const totalTaxRow = previewSummaryTable.querySelector('tr:nth-child(2)');
+            // Dodajemy wiersz z sumą podatku
+            const taxRow = previewSummaryTable.insertRow(0);
+            taxRow.innerHTML = `
+                <th>Razem VAT:</th>
+                <td class="text-right" id="preview-total-tax">${formatCurrency(totalTax)}</td>
+            `;
+            
+            // Dodajemy wiersze ze szczegółami podatku
             Object.keys(taxRateTotals).sort((a, b) => b - a).forEach(rate => {
                 if (taxRateTotals[rate] > 0) {
-                    const taxRow = document.createElement('tr');
-                    taxRow.innerHTML = `
+                    const detailRow = previewSummaryTable.insertRow(0);
+                    detailRow.innerHTML = `
                         <th>Podatek VAT (${rate}%):</th>
                         <td class="text-right">${formatCurrency(taxRateTotals[rate])}</td>
                     `;
-                    previewSummaryTable.insertBefore(taxRow, totalTaxRow);
                 }
             });
             
+            // Dodajemy wiersz z sumą netto na samą górę
+            const netRow = previewSummaryTable.insertRow(0);
+            netRow.innerHTML = `
+                <th>Razem netto:</th>
+                <td class="text-right" id="preview-total-net">${formatCurrency(totalNet)}</td>
+            `;
+            
+            // Stylizujemy ostatni wiersz (razem brutto)
+            const lastRow = previewSummaryTable.rows[previewSummaryTable.rows.length - 1];
+            lastRow.style.fontWeight = '700';
+            
+            // Aktualizujemy tekst w polach
             document.getElementById('preview-total-net').textContent = formatCurrency(totalNet);
             document.getElementById('preview-total-tax').textContent = formatCurrency(totalTax);
             document.getElementById('preview-total-gross').textContent = formatCurrency(totalGross);
@@ -1254,9 +1325,13 @@
                     if (thousands === 1) {
                         result += 'jeden tysiąc';
                     } else {
-                        result += convertLessThanThousand(thousands) + ' tysięcy';
+                        result += convertLessThanThousand(thousands) + ' ';
+                        
+                        // Proper grammar for thousands in Polish
                         if (thousands % 10 >= 2 && thousands % 10 <= 4 && (thousands % 100 < 10 || thousands % 100 > 20)) {
-                            result = result.slice(0, -8) + "tysiące";
+                            result += "tysiące";
+                        } else {
+                            result += "tysięcy";
                         }
                     }
                     if (remainder > 0) {
@@ -1327,12 +1402,15 @@
                 
                 const quantity = row.querySelector('[name="item-quantity"]').value;
                 const unit = row.querySelector('[name="item-unit"]').value;
-                const price = parseFloat(row.querySelector('[name="item-price"]').value) || 0;
-                const netValue = parseFloat(row.querySelector('[name="item-net-value"]').value) || 0;
+                const priceText = row.querySelector('[name="item-price"]').value;
+                const price = parseFloat(priceText.replace(/\s/g, '').replace(',', '.')) || 0;
+                const netValueText = row.querySelector('[name="item-net-value"]').value;
+                const netValue = parseFloat(netValueText.replace(/\s/g, '').replace(',', '.')) || 0;
                 const taxRateSelect = row.querySelector('[name="item-tax"]');
                 const taxRateValue = taxRateSelect.value;
                 const taxRateText = taxRateSelect.options[taxRateSelect.selectedIndex].text;
-                const grossValue = parseFloat(row.querySelector('[name="item-gross-value"]').value) || 0;
+                const grossValueText = row.querySelector('[name="item-gross-value"]').value;
+                const grossValue = parseFloat(grossValueText.replace(/\s/g, '').replace(',', '.')) || 0;
                 const taxAmount = grossValue - netValue;
                 
                 totalNet += netValue;
@@ -1370,36 +1448,46 @@
             updatePreviewSummary(taxRateTotals, totalNet, totalTax, totalGross);
         }
         
-        document.getElementById('btn-print').addEventListener('click', function() {
+        function printInvoice() {
             window.print();
-        });
+        }
         
-        document.getElementById('btn-download-pdf').addEventListener('click', function() {
-            const { jsPDF } = window.jspdf;
-            const element = document.getElementById('preview-container');
-            html2canvas(element).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save('faktura-easy-fv.pdf');
-            });
-        });
+        function downloadPDFFile() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const element = document.getElementById('preview-container');
+                html2canvas(element).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.save('faktura-easy-fv.pdf');
+                });
+            } catch (error) {
+                console.error('Błąd przy generowaniu PDF:', error);
+                alert('Wystąpił błąd podczas generowania PDF. Spróbuj ponownie.');
+            }
+        }
         
         function downloadHTMLFile() {
-            const htmlContent = document.documentElement.outerHTML;
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'faktura-easy-fv.html';
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 0);
+            try {
+                const htmlContent = document.documentElement.outerHTML;
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'faktura-easy-fv.html';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 0);
+            } catch (error) {
+                console.error('Błąd przy pobieraniu HTML:', error);
+                alert('Wystąpił błąd podczas pobierania HTML. Spróbuj ponownie.');
+            }
         }
         
         document.getElementById('btn-invoices').addEventListener('click', function() {
@@ -1412,9 +1500,8 @@
             document.getElementById('new-invoice-screen').style.display = 'block';
         });
         
-        document.getElementById('generate-invoice').addEventListener('click', function() {
-            updatePreview();
-            window.print();
+        document.getElementById('save-draft').addEventListener('click', function() {
+            alert('Faktura została zapisana jako szkic');
         });
     </script>
 </body>
