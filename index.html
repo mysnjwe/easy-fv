@@ -278,7 +278,7 @@
             background: white;
             box-shadow: var(--shadow);
             border-radius: var(--radius);
-            max-width: 880px;
+            max-width: 920px;
             margin: 0 auto;
             border: 1px solid var(--border);
         }
@@ -893,18 +893,18 @@
                                 </div>
                                 
                                 <div class="preview-section">
-                                    <table style="margin-bottom: 0; background-color: white; border-radius: var(--radius);">
+                                    <table style="margin-bottom: 0; background-color: white; border-radius: var(--radius); table-layout: fixed; width: 100%;">
                                         <thead>
                                             <tr>
-                                                <th style="width: 30px; border-radius: var(--radius-sm) 0 0 0;">Lp.</th>
-                                                <th>Nazwa towaru/usługi</th>
-                                                <th style="width: 60px;">Ilość</th>
-                                                <th style="width: 60px;">J.m.</th>
-                                                <th>Cena netto</th>
-                                                <th>Wartość netto</th>
-                                                <th>VAT</th>
-                                                <th>Kwota VAT</th>
-                                                <th style="border-radius: 0 var(--radius-sm) 0 0;">Wartość brutto</th>
+                                                <th style="width: 40px; border-radius: var(--radius-sm) 0 0 0; white-space: nowrap;">Lp.</th>
+                                                <th style="width: 25%;">Nazwa towaru/usługi</th>
+                                                <th style="width: 50px; white-space: nowrap;">Ilość</th>
+                                                <th style="width: 50px; white-space: nowrap;">J.m.</th>
+                                                <th style="width: 100px; white-space: nowrap;">Cena netto</th>
+                                                <th style="width: 110px; white-space: nowrap;">Wartość netto</th>
+                                                <th style="width: 60px; white-space: nowrap;">VAT</th>
+                                                <th style="width: 110px; white-space: nowrap;">Kwota VAT</th>
+                                                <th style="border-radius: 0 var(--radius-sm) 0 0; width: 130px; white-space: nowrap;">Wartość brutto</th>
                                             </tr>
                                         </thead>
                                         <tbody id="preview-items">
@@ -921,16 +921,16 @@
                                         <div class="section" style="margin-bottom: 0;">
                                             <table style="width: 100%;" id="preview-summary-table">
                                                 <tr>
-                                                    <th>Razem netto:</th>
-                                                    <td class="text-right" id="preview-total-net">0,00 zł</td>
+                                                    <th style="white-space: nowrap;">Razem netto:</th>
+                                                    <td class="text-right" style="white-space: nowrap;" id="preview-total-net">0,00 zł</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Razem VAT:</th>
-                                                    <td class="text-right" id="preview-total-tax">0,00 zł</td>
+                                                    <th style="white-space: nowrap;">Razem VAT:</th>
+                                                    <td class="text-right" style="white-space: nowrap;" id="preview-total-tax">0,00 zł</td>
                                                 </tr>
                                                 <tr style="font-weight: 700;">
-                                                    <th>Razem brutto:</th>
-                                                    <td class="text-right" id="preview-total-gross">0,00 zł</td>
+                                                    <th style="white-space: nowrap;">Razem brutto:</th>
+                                                    <td class="text-right" style="white-space: nowrap;" id="preview-total-gross">0,00 zł</td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -1019,21 +1019,37 @@
                     const priceInput = row.querySelector('[name="item-price"]');
                     
                     priceInput.addEventListener('focus', function() {
-                        // Convert from formatted to raw on focus
-                        const value = parseFloat(this.value.replace(/\s/g, '').replace(',', '.')) || 0;
-                        this.value = value.toFixed(2).replace('.', ',');
+                        // Gdy pole jest aktywne, usuwamy formatowanie i przecinek
+                        const rawValue = this.value.replace(/\s/g, '').replace(',', '.');
+                        if (parseFloat(rawValue) === 0 || isNaN(parseFloat(rawValue))) {
+                            this.value = '';  // Całkowicie puste pole
+                        } else {
+                            this.value = parseFloat(rawValue).toString().replace('.', ',');
+                        }
                     });
 
                     priceInput.addEventListener('blur', function() {
-                        // Format with separators on blur
-                        const value = parseFloat(this.value.replace(/\s/g, '').replace(',', '.')) || 0;
+                        // Przy wyjściu z pola, jeśli jest puste, zostawiamy puste
+                        if (this.value === '') {
+                            return;
+                        }
+                        
+                        // W przeciwnym razie formatujemy z przecinkiem i spacjami
+                        let value = this.value.replace(',', '.');
+                        if (value.indexOf('.') === -1) {
+                            // Jeśli nie ma przecinka, dodajemy go
+                            value = value + '.00';
+                        }
+                        value = parseFloat(value) || 0;
                         this.value = formatCurrencyInput(value);
                     });
 
-                    // Format initial value
-                    if (priceInput.value) {
+                    // Format initial value if not empty
+                    if (priceInput.value && priceInput.value !== '0,00' && priceInput.value !== '0') {
                         const value = parseFloat(priceInput.value.replace(/\s/g, '').replace(',', '.')) || 0;
                         priceInput.value = formatCurrencyInput(value);
+                    } else {
+                        priceInput.value = '';  // Początkowo puste
                     }
                 }
             });
@@ -1139,8 +1155,17 @@
             }
             
             // Format with separators for display
-            row.querySelector('[name="item-net-value"]').value = formatCurrencyInput(netValue);
-            row.querySelector('[name="item-gross-value"]').value = formatCurrencyInput(grossValue);
+            const netValueInput = row.querySelector('[name="item-net-value"]');
+            const grossValueInput = row.querySelector('[name="item-gross-value"]');
+            
+            // Tylko formatuj jeśli jest wartość większa niż 0
+            if (netValue > 0) {
+                netValueInput.value = formatCurrencyInput(netValue);
+                grossValueInput.value = formatCurrencyInput(grossValue);
+            } else {
+                netValueInput.value = '';
+                grossValueInput.value = '';
+            }
             
             updateTotals();
         }
@@ -1426,15 +1451,15 @@
                 
                 const newRow = document.createElement('tr');
                 newRow.innerHTML = `
-                    <td>${rowNumber}</td>
+                    <td style="white-space: nowrap; text-align: center;">${rowNumber}</td>
                     <td>${name}</td>
-                    <td>${quantity}</td>
-                    <td>${unit}</td>
-                    <td>${formatCurrency(price)}</td>
-                    <td>${formatCurrency(netValue)}</td>
-                    <td>${taxRateText}</td>
-                    <td>${formatCurrency(taxAmount)}</td>
-                    <td>${formatCurrency(grossValue)}</td>
+                    <td style="white-space: nowrap; text-align: center;">${quantity}</td>
+                    <td style="white-space: nowrap; text-align: center;">${unit}</td>
+                    <td style="white-space: nowrap; text-align: right;">${formatCurrency(price)}</td>
+                    <td style="white-space: nowrap; text-align: right;">${formatCurrency(netValue)}</td>
+                    <td style="white-space: nowrap; text-align: center;">${taxRateText}</td>
+                    <td style="white-space: nowrap; text-align: right;">${formatCurrency(taxAmount)}</td>
+                    <td style="white-space: nowrap; text-align: right;">${formatCurrency(grossValue)}</td>
                 `;
                 previewItems.appendChild(newRow);
                 rowNumber++;
